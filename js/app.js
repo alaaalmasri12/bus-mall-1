@@ -35,7 +35,9 @@ function render () {
  middleProduct =Products.all[randomNumber(0,Products.all.length-1)];
 
 leftProduct = Products.all[randomNumber(0,Products.all.length-1)]; 
-
+while ((rightProduct === middleProduct) || (rightProduct === leftProduct) || (middleProduct === leftProduct)){
+    render();
+}
 rightImage.setAttribute('src',rightProduct.imgPath);
 rightImage.setAttribute('alt',rightProduct.name);
 rightImage.setAttribute('title',rightProduct.name);
