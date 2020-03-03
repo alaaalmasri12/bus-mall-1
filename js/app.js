@@ -1,5 +1,6 @@
 var names = ["bag.jpg", 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg', 'unicorn.jpg', 'usb.gif', 'water-can.jpg', 'wine-glass.jpg'];
 
+var dublicationFollowUpChecker = [];
 
 
 var imageHolder = document.querySelector('#imageHolder');
@@ -7,9 +8,6 @@ var rightImage = document.querySelector('#rightImage');
 var middleImage = document.querySelector('#middleImage');
 var leftImage = document.querySelector('#leftImage');
 
-// rightImage.src = `/img/${names[0]}`;
-// rightImage.alt = names[0];
-// rightImage.title = names[0];
 
 
 function Products(prod) {
@@ -27,6 +25,21 @@ for (let i = 0; i < names.length; i++) {
     new Products(names[i]);
 }
 
+function chartDataUpdate(){
+    var newChartData = JSON.stringify(Products.all);
+    localStorage.setItem('votesAndViews',newChartData);
+}
+
+function chartDataBringer (){ 
+    var newBroughtData = localStorage.getItem('votesAndViews');
+    if(newBroughtData){
+        Products.all = JSON.parse(newBroughtData);
+
+        render2();
+    }
+}
+
+
 var rightProduct, middleProduct, leftProduct;
 
 function render() {
@@ -37,9 +50,31 @@ function render() {
 
     leftProduct = Products.all[randomNumber(0, Products.all.length - 1)];
 
+
+//  if (clicksCounter >=1){
+
     while ((rightProduct === middleProduct) || (rightProduct === leftProduct) || (middleProduct === leftProduct)) {
         render();
     }
+
+//    while (dublicationFollowUpChecker.includes(rightProduct)) {
+//     rightProduct = Products.all[randomNumber(0, Products.all.length - 1)];
+//    }
+
+//    while (dublicationFollowUpChecker.includes(middleProduct)) {
+//     middleProduct = Products.all[randomNumber(0, Products.all.length - 1)];
+//    }
+
+//    while (dublicationFollowUpChecker.includes(leftProduct)) {
+//     leftProduct = Products.all[randomNumber(0, Products.all.length - 1)];
+//    }
+
+//    dublicationFollowUpChecker[0]=rightProduct;
+//    dublicationFollowUpChecker[1]=middleProduct;
+//    dublicationFollowUpChecker[2]=leftProduct;
+
+   
+
     rightImage.setAttribute('src', rightProduct.imgPath);
     rightImage.setAttribute('alt', rightProduct.name);
     rightImage.setAttribute('title', rightProduct.name);
@@ -75,7 +110,9 @@ function catchClicks(event) {
             leftProduct.views++;
             for (let i = 0; i < Products.all.length; i++) {
                 clickArray[i] = Products.all[i].votes;
+                viewsArray[i] = Products.all[i].views;
             }
+            chartDataUpdate();
             render();
         }
     } else {
@@ -85,22 +122,10 @@ function catchClicks(event) {
     }
 }
 var clickArray = [];
-
+var viewsArray = [];
 
 function render2() {
     console.log(clickArray);
-    // var divE1 = document.getElementById('result');
-    // var ulE1 = document.createElement('ul');
-    // divE1.appendChild(ulE1);
-    // for (let i = 0; i < Products.all.length; i++) {
-    //     var liE1=document.createElement('li');; 
-    //     liE1.textContent=`${Products.all[i].prodduct} has ${Products.all[i].votes} votes and ${Products.all[i].views} views`;
-
-    // ulE1.appendChild(liE1);
-
-    // }
-
-
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
         type: 'bar',
@@ -109,6 +134,26 @@ function render2() {
             datasets: [{
                 label: '# of Votes',
                 data: clickArray,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }, {
+                label: '# of Views',
+                data: viewsArray,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
@@ -145,3 +190,4 @@ function render2() {
 function randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+chartDataBringer();
